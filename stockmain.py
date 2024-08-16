@@ -15,7 +15,7 @@ year_to_minus = TODAY.year - 10
 
 # START = TODAY.replace(year=year_to_minus).strftime("%Y-%m-%d")
 
-START = "2015-01-01"
+START = "2015-01-02"
 
 sl.title("Stock forecast")
 
