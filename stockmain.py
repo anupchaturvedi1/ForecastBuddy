@@ -65,9 +65,8 @@ futuredata= model.make_future_dataframe(periods=period)
 forecastdata = model.predict(futuredata)
 
 sl.subheader("Forecast Data")
-#Download the Data for Ticker
-sl.dataframe(forecastdata.tail())
-sl.download_button("Download tikcer Data", forecastdata.to_csv(index=True),file_name=f"{selected_stock}_TickerData.csv", mime="text/csv")
+sl.write(forecastdata.tail())
+
 model.plot(forecastdata)
 # fig1 = plot_plotly(model, forecastdata)
 # sl.plotly_chart(fig1)
@@ -76,7 +75,9 @@ fig, ax = plt.subplots()
 plot = sl.pyplot(fig)
 plot.pyplot(fig)
 
-
+#Download the Data for Ticker
+sl.subheader("Summary")
+sl.download_button("Download tikcer Data", forecastdata.to_csv(index=True),file_name=f"{selected_stock}_TickerData.csv", mime="text/csv")
 
 sl.write("Forecast Components")
 fig2 = model.plot_components(forecastdata)
