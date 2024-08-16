@@ -3,6 +3,10 @@ import datetime
 
 import yfinance as yf 
 from prophet import Prophet
+#from fbprophet.plot import plot_plotly
+
+import plotly.figure_factory as ff
+
 from plotly import graph_objs as go 
 import pandas as pd 
 
@@ -44,8 +48,8 @@ print(data)
 
 def plot_data():
     figure = go.Figure()
-    figure.add_trace(go.Scatter(x=data['Date'], y=data['High'], name='open'))
-    figure.add_trace(go.Scatter(x=data['Date'], y=data['Low'], name='close'))
+    figure.add_trace(go.Scatter(x=data['Date'], y=data['High'], name='Ticker Open'))
+    figure.add_trace(go.Scatter(x=data['Date'], y=data['Low'], name='Ticker Close'))
     figure.layout.update(title_text="Time Data", xaxis_rangeslider_visible=True)
     sl.plotly_chart(figure)
 
@@ -56,9 +60,7 @@ dataframretraining = dataframretraining.rename(columns={"Date": "ds", "Close": "
 
 model= Prophet()
 model.fit(dataframretraining)
-
 futuredata= model.make_future_dataframe(periods=period)
-
 forecastdata = model.predict(futuredata)
 
 sl.subheader("Forecast Data")
@@ -67,6 +69,12 @@ sl.write(forecastdata.tail())
 model.plot(forecastdata)
 # fig1 = plot_plotly(model, forecastdata)
 # sl.plotly_chart(fig1)
+
+
+#Download the Data for Ticker
+sl.subheader("Summary")
+sl.dataframe(forecastdata.tail())
+sl.download_button("Download tikcer Data", forecastdata.to_csv(index=True),file_name=f"{selected_stock}_TickerData.csv", mime="text/csv")
 
 sl.write("Forecast Components")
 fig2 = model.plot_components(forecastdata)
