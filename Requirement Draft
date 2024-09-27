@@ -1,0 +1,12 @@
+There are mutliple input which can help for the Forcasting:
+1. Historical Data (Price Open and Close)
+2. Divident
+3. Split Record
+4. Company Ratio
+5. Ratio such as P/B & P/E
+6. Gordon Growth Model (GGM)
+7. Classification Approach - This approach uses outputs in the form of buy (y=+1) and Sell (y=-1) to predict stock movement.
+8. use P/E * EPS  = Price.
+
+We need to list the different charts/reports which need to be part of this project.
+We also need to decide UI with the diffrent option for user to select and view results. 
