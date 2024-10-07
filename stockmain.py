@@ -1,13 +1,17 @@
 import streamlit as sl 
 import datetime
-
 import yfinance as yf 
+import csv
+
 from prophet import Prophet
 #from fbprophet.plot import plot_plotly
 
 import plotly.figure_factory as ff
 
 from plotly import graph_objs as go 
+
+from tickerdetails import get_ticker
+
 import pandas as pd 
 import matplotlib.pyplot as plt
 import time
@@ -22,13 +26,16 @@ year_to_minus = TODAY.year - 10
 
 START = "2015-01-02"
 
-sl.title("Stock forecast")
+sl.title("Forecast Buddy")
 
-stocksname= ("AAPL","GOOG","MSFT")
+result = get_ticker()
+print(result)
+
+stocksname= result # ("AAPL","GOOG","MSFT","PLUG","ZETA")
 
 selected_stock = sl.selectbox("Select stock", stocksname)
 
-years = sl.slider("Years of forecasrt" , 1, 10)
+years = sl.slider("Years of forecast" , 1, 10)
 
 period = years * 365
 
@@ -71,13 +78,13 @@ model.plot(forecastdata)
 # fig1 = plot_plotly(model, forecastdata)
 # sl.plotly_chart(fig1)
 
-fig, ax = plt.subplots()
-plot = sl.pyplot(fig)
-plot.pyplot(fig)
+# fig, ax = plt.subplots()
+# plot = sl.pyplot(fig)
+# plot.pyplot(fig)
 
 #Download the Data for Ticker
 sl.subheader("Summary")
-sl.download_button("Download tikcer Data", forecastdata.to_csv(index=True),file_name=f"{selected_stock}_TickerData.csv", mime="text/csv")
+sl.download_button("Download ticker Data", forecastdata.to_csv(index=True),file_name=f"{selected_stock}_TickerData.csv", mime="text/csv")
 
 sl.write("Forecast Components")
 fig2 = model.plot_components(forecastdata)
