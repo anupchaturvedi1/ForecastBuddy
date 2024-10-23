@@ -1,44 +1,29 @@
 import streamlit as sl 
 import datetime
 import yfinance as yf 
-import csv
-
 from prophet import Prophet
 #from fbprophet.plot import plot_plotly
-
 import plotly.figure_factory as ff
-
 from plotly import graph_objs as go 
-
 from tickerdetails import get_ticker
-
 import pandas as pd 
 import matplotlib.pyplot as plt
-import time
+
 
 TODAY = datetime.date.today()
 
-print(TODAY)
+START = datetime.date.today() - datetime.timedelta(days=10*365)
 
-year_to_minus = TODAY.year - 10
-
-# START = TODAY.replace(year=year_to_minus).strftime("%Y-%m-%d")
-
-START = "2015-01-02"
-
-sl.title("Forecast Buddy")
+sl.sidebar.title("Forecast Buddy")
 
 result = get_ticker()
-print(result)
 
-stocksname= result # ("AAPL","GOOG","MSFT","PLUG","ZETA")
+stocksname= result
+selected_stock = sl.sidebar.selectbox("Select stock", stocksname)
 
-selected_stock = sl.selectbox("Select stock", stocksname)
-
-years = sl.slider("Years of forecast" , 1, 10)
+years = sl.sidebar.slider("Years of forecast" , 1, 10)
 
 period = years * 365
-
 
 def load_stock_data(stockname):
     data = yf.download(stockname,START,TODAY)
@@ -49,11 +34,6 @@ data_load_state = sl.text("Load Stock Data")
 data = load_stock_data(selected_stock)
 data_load_state.text("Load completed")
 
-sl.subheader("Data")
-sl.write(data.tail())
-
-print(data)
-
 def plot_data():
     figure = go.Figure()
     figure.add_trace(go.Scatter(x=data['Date'], y=data['High'], name='Ticker Open'))
@@ -61,7 +41,19 @@ def plot_data():
     figure.layout.update(title_text="Time Data", xaxis_rangeslider_visible=True)
     sl.plotly_chart(figure)
 
-plot_data()
+#plot_data()
+
+basedatatab, basedatacharttab = sl.tabs(["🗃 Data" , "📈 Chart"])
+basedatatab.subheader("Base Data")
+basedatatab.write(data.tail())
+
+basedatacharttab.subheader("Chart")
+#basedatacharttab.line_chart(data['High'])
+figure = go.Figure()
+figure.add_trace(go.Scatter(x=data['Date'], y=data['High'], name='Ticker Open'))
+figure.add_trace(go.Scatter(x=data['Date'], y=data['Low'], name='Ticker Close'))
+figure.layout.update(title_text="Time Data", xaxis_rangeslider_visible=True)
+basedatacharttab.plotly_chart(figure)
 
 dataframretraining = data[["Date","Close"]]
 dataframretraining = dataframretraining.rename(columns={"Date": "ds", "Close": "y"})
