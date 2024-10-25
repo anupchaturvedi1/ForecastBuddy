@@ -2,12 +2,8 @@ import streamlit as sl
 import datetime
 import yfinance as yf 
 from prophet import Prophet
-#from fbprophet.plot import plot_plotly
-import plotly.figure_factory as ff
 from plotly import graph_objs as go 
 from tickerdetails import get_ticker
-import pandas as pd 
-import matplotlib.pyplot as plt
 from prophet.plot import plot_plotly, plot_components_plotly
 
 TODAY = datetime.date.today()
