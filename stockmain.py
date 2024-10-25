@@ -8,7 +8,7 @@ from plotly import graph_objs as go
 from tickerdetails import get_ticker
 import pandas as pd 
 import matplotlib.pyplot as plt
-
+from prophet.plot import plot_plotly, plot_components_plotly
 
 TODAY = datetime.date.today()
 
@@ -19,12 +19,13 @@ sl.sidebar.title("Forecast Buddy")
 result = get_ticker()
 
 stocksname= result
-selected_stock = sl.sidebar.selectbox("Select stock", stocksname)
+selected_stock =sl.sidebar.selectbox("Select stock", stocksname)
 
 years = sl.sidebar.slider("Years of forecast" , 1, 10)
 
 period = years * 365
 
+@sl.cache_data
 def load_stock_data(stockname):
     data = yf.download(stockname,START,TODAY)
     data.reset_index(inplace=True)
@@ -34,21 +35,11 @@ data_load_state = sl.text("Load Stock Data")
 data = load_stock_data(selected_stock)
 data_load_state.text("Load completed")
 
-def plot_data():
-    figure = go.Figure()
-    figure.add_trace(go.Scatter(x=data['Date'], y=data['High'], name='Ticker Open'))
-    figure.add_trace(go.Scatter(x=data['Date'], y=data['Low'], name='Ticker Close'))
-    figure.layout.update(title_text="Time Data", xaxis_rangeslider_visible=True)
-    sl.plotly_chart(figure)
-
-#plot_data()
-
 basedatatab, basedatacharttab = sl.tabs(["🗃 Data" , "📈 Chart"])
 basedatatab.subheader("Base Data")
 basedatatab.write(data.tail())
 
 basedatacharttab.subheader("Chart")
-#basedatacharttab.line_chart(data['High'])
 figure = go.Figure()
 figure.add_trace(go.Scatter(x=data['Date'], y=data['High'], name='Ticker Open'))
 figure.add_trace(go.Scatter(x=data['Date'], y=data['Low'], name='Ticker Close'))
@@ -67,17 +58,17 @@ sl.subheader("Forecast Data")
 sl.write(forecastdata.tail())
 
 model.plot(forecastdata)
-# fig1 = plot_plotly(model, forecastdata)
-# sl.plotly_chart(fig1)
-
-# fig, ax = plt.subplots()
-# plot = sl.pyplot(fig)
-# plot.pyplot(fig)
 
 #Download the Data for Ticker
 sl.subheader("Summary")
 sl.download_button("Download ticker Data", forecastdata.to_csv(index=True),file_name=f"{selected_stock}_TickerData.csv", mime="text/csv")
 
-sl.write("Forecast Components")
-fig2 = model.plot_components(forecastdata)
-sl.write(fig2)
+forecast_fig = plot_plotly(model, forecastdata)
+forecast_component = plot_components_plotly(model, forecastdata)
+
+forecasttab, componenttab = sl.tabs(["🗃 Forecast" , "📈 Componenets"])
+forecasttab.subheader("Forecast")
+forecasttab.write(forecast_fig)
+
+componenttab.subheader("Forecast Componenets")
+componenttab.write(forecast_component)

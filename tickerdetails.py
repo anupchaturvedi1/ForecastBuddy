@@ -1,7 +1,7 @@
 import csv
 import os
 import requests
-
+import streamlit as sl 
 
 # def get_ticker():
 #    """Reads a CSV file and returns a list of ticker values."""
@@ -13,7 +13,7 @@ import requests
 #         for row in reader:
 #             ticket_list.extend(row)
 #    return ticket_list
-
+@sl.cache_data
 def get_ticker():
     api_key = os.environ.get("FMPCLOUD_API_KEY")
     
